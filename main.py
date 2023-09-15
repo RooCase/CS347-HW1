@@ -1,6 +1,8 @@
 import board
+from flask import Flask
 from random import randint
 
+app = Flask(__name__)
 gameDict = {}
 
 class game:
@@ -9,3 +11,12 @@ class game:
         gameBoard = board()
         playerState = "x"
         gameDict.update(gameID, self)
+
+@app.route('/newgame/player')
+def newGame():
+    activeGame = game()
+    return {
+        'id': activeGame.gameID,
+        'state': activeGame.playerState
+    }
+
