@@ -5,7 +5,7 @@ class Board:
         next_player = ""
         boardState = "-------------------"*19
         capturedX = 0
-        capturedY = 0
+        capturedO = 0
 
     def update_points(self, player):
         if player == "X":
