@@ -31,8 +31,11 @@ class Board:
         
     def make_move(self, player, playerX, playerY):
         pos = playerX + (19 * playerY) - 1 #-1 to adjust for indexing
+        if not self.pos_is_empty(pos):
+            return print("Invalid move! Position is already occupied.")
         self.boardState[pos] = player
         self.update_player(player)
+        return print("Successful move!")
         
     def is_five_in_row(self, player, playerX, playerY):
         pos = playerX + (19 * playerY) - 1 #-1 to adjust for indexing
@@ -49,10 +52,19 @@ class Board:
         nxt = pos + (dirX * 19 * n) + (dirY * n) - 1 #-1 to adjust for indexing
         if nxt > 361:
             return False
+        if not self.pos_is_empty(nxt):
+            return False
         if self.boardState[nxt] != player:
             return False
         if n == 4:
             return True
         else:
             return self.check_five_in_row_in_dir(player, nxt, n+1)
+        
+    def pos_is_empty(self, pos):
+        if self.boardState[pos] != "":
+            return False
+        else:
+            return True
+        
     
