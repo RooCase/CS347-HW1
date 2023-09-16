@@ -29,6 +29,11 @@ class Board:
         else:
             return self.is_five_in_row(player, playerX, playerY)
         
+    def make_move(self, player, playerX, playerY):
+        pos = playerX + (19 * playerY) - 1 #-1 to adjust for indexing
+        self.boardState[pos] = player
+        self.update_player(player)
+        
     def is_five_in_row(self, player, playerX, playerY):
         pos = playerX + (19 * playerY) - 1 #-1 to adjust for indexing
         dir_dic = [[1,0], [-1,0], [0,1], [0,-1], [1,1], [-1,-1], [1,-1], [-1,1]]
