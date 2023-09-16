@@ -8,7 +8,9 @@ class Board:
         self.capturedO = 0
 
     def update_points(self, player):
-        """Updates point for player after capturing stone."""
+        """
+        Updates point for player after capturing stone.
+        """
         if player == "X":
             self.capturedX += 2
         elif player == "O":
@@ -17,16 +19,20 @@ class Board:
             raise Exception("Invalid playerID provided")
     
     def update_player(self, player):
-        """Updates the next year in the board."""
+        """
+        Updates the next year in the board.
+        """
         if player == "X":
             self.next_player = "O"
         else:
             self.next_player = "X"
     
     def has_won(self, capturedX, capturedO, player, posX, posY):
-        """Checks if either player has won 
+        """
+        Checks if either player has won 
             1) after capturing at least 2 pairs of stones (10 pieces)
-            2) after at least one 5-in-a-row"""
+            2) after at least one 5-in-a-row
+        """
         if capturedX >= 10:
             return print("X has won!")
         elif capturedO >= 10:
@@ -35,39 +41,70 @@ class Board:
             return self.is_five_in_row(player, posX, posY)
         
     def make_move(self, player, posX, posY):
-        """Updates player's move in boardState."""
-        pos = posX + (19 * posY) - 1 #-1 to adjust for indexing
+        """
+        Updates player's move in boardState.
+        """
+        pos = (19 * posX) + posY - 1 #-1 to adjust for indexing
         if not self.pos_is_empty(pos):
             return print("Invalid move! Position is already occupied.")
         self.boardState[pos] = player
         self.update_player(player)
-        return print("Successful move!")
+        return
         
-    def is_five_in_row(self, player, posX, posY):
-        """Check if 5-in-a-row in either direction"""
-        pos = posX + (19 * posY) - 1 #-1 to adjust for indexing
-        dir_dic = [[1,0], [-1,0], [0,1], [0,-1], [1,1], [-1,-1], [1,-1], [-1,1]]
-        for dir in dir_dic:
-            has_won = self.five_in_row_helper(player, pos, 1, dir[0], dir[1])
-            if has_won:
-                return has_won
-        return has_won
+    def check_horizontally(self, player, posX, posY):
+        """
+        Checks for five-in-row horizontally given the player and position
+        """
+        count = 0
+        for i in range(max(posY-4, 0), min(posY+5, 20)): # taking into account board bounds when calculating the range
+            if self.boardState[(19 * posX) + i - 1] == player:
+                count += 1
+            else:
+                break
+        return count == 5 # returns if the count is five
     
-    # n is the nth row on the board where 0 <= n <= 8
-    # dirX and dirY are the direction in which 5-in-a-row is formed. Their values: -1, 0, 1
-    def five_in_row_helper(self, player, pos, n, dirX, dirY):
-        """Incrimentally calculate the next board position in a row."""
-        nxt = pos + (dirX * 19 * n) + (dirY * n) - 1 #-1 to adjust for indexing
-        if nxt > 361:
-            return False
-        if not self.pos_is_empty(nxt):
-            return False
-        if self.boardState[nxt] != player:
-            return False
-        if n == 4:
-            return True
-        else:
-            return self.check_five_in_row_in_dir(player, nxt, n+1)
+    def check_vertically(self, player, posX, posY):
+        """
+        Checks for five-in-row vertically given the player and position
+        """
+        count = 0
+        for i in range(max(posX-4, 0), min(posX+5, 20)): # taking into account board bounds when calculating the range
+            if self.boardState[(19 * i) + posY - 1] == player:
+                count += 1
+            else:
+                break
+        return count == 5 # returns if the count is five
+
+    def check_diagonally(self, player, posX, posY):
+        """
+        Checks for five-in-row diagonally given the player and position
+        """
+        count = 0
+        for i in range(max(-posX, -posY, -4), min(posX+5, posY+5, 20)): # taking board bounds for both rows and cols
+            if self.boardState[(19 * posX + i) + posY + i - 1] == player: # moving diagonal-wise
+                count += 1
+            else:
+                break
+        return count == 5 # returns if the count is five
+    
+    def check_antidiagonally(self, player, posX, posY):
+        """
+        Checks for five-in-row antidiagonally given the player and position
+        """
+        count = 0
+        for i in range(max(-posY, -4), min(posX+5, 20)): # taking board bounds for both rows and cols
+            if self.boardState[(19 * posX + i) + posY - i - 1] == player: # moving antidiagonal-wise
+                count += 1
+            else:
+                break
+        return count == 5 # returns if the count is five
+
+    def is_five_in_row(self, player, posX, posY):
+        """
+        Check if 5-in-a-row in either direction
+        """
+        return self.check_horizontally(player, posX, posY) or self.check_vertically(player, posX, posY) \
+            or self.check_diagonally(player, posX, posY) or self.check_antidiagonally(player, posX, posY)
         
     def pos_is_empty(self, pos):
         """Checks if a given position on the board is empty"""
