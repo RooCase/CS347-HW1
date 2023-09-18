@@ -47,7 +47,7 @@ def nextMove(gameID, row, col):
     """
     activeGame = gameDict[gameID]
     board = activeGame.gameBoard
-    board.make_move(row, col)
+    board.make_move(board.next_player, row, col)
     activeGame.ai.move()
     activeGame.update()
 
