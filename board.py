@@ -47,12 +47,15 @@ class Board:
         posY: play position of the player in Y coordinate, value between 1 and 19
 
         """
+        if (row > 19) or (col > 19):
+            raise Exception("Invalid row or column number. Must be at or between 1 and 19.")
         pos = (19 * row) + col - 1 #-1 to adjust for indexing
         if not self.pos_is_empty(pos):
             return ("Invalid move! Position is already occupied.")
         self.boardState[pos] = player
+        self.has_won(self.capturedX, self.capturedO, player, row, col)
+        self.check_captured(player, row, col)
         self.update_player(player)
-        return
         
     def check_horizontally(self, player, row, col):
         """
@@ -120,22 +123,52 @@ class Board:
         """
         Check if any captures are possible. If so, capture.
         """
-        return self.capture_hor(player, row, col) and self.capture_ver(player, row, col) \
+        self.capture_hor(player, row, col) and self.capture_ver(player, row, col) \
             and self.capture_dia(player, row, col) and self.capture_antidia(player, row, col)
 
-    def capture_hor(self, player, row, col):
-        capture = False     
-        for i in range(max(col-4, 1), min(col+5, 20)): # taking into account board bounds when calculating the range
-            if self.boardState[(19 * row) + i - 1] == player:
+    def capture_hor(self, player, row, col): 
+        """
+        Check if any stones can be captured horizontally.
+        """  
+        if player == "X":
+            opponent = "O"
+        else:
+            opponent = "X"
+        capture_lst = []
+        count = 0
+
+        # check capture in negative horizontal direction.
+        for i in range(col, max(col-3, 1)):
+            pos = (19 * row) + i - 1
+            if count == 2: 
+                if self.boardState[pos] == player:
+                    count = 0
+                    break
+                else:
+                    capture_lst.clear()
+                    break
+            if self.boardState[pos] == opponent:
+                capture_lst.add(pos)
                 count += 1
             else:
                 break
-        
-        # check if direction is valid for left and right
-        # if valid check capture, forward loop for 2 times
-        #     keep track of capture stones
-        #     if can capture, change capture to True and change board items
-        return
+
+        # check capture in negative horizontal direction.
+        for i in range(col, min(col+2, 2)):
+            pos = (19 * row) + i - 1
+            if count == 2: 
+                if self.boardState[pos] == player:
+                    count = 0
+                    break
+                else:
+                    capture_lst.clear()
+                    break
+            if self.boardState[pos] == opponent:
+                capture_lst.add(pos)
+                count += 1
+            else:
+                break
+        self.capture(capture_lst)
     
     def capture_ver(self, player, row, col):
         return
@@ -145,3 +178,8 @@ class Board:
     
     def capture_antidia(self, player, row, col):
         return
+    
+    def capture(self, lst):
+        for stone in lst:
+            self.boardState[stone] = "-"
+            lst
