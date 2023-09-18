@@ -1,5 +1,5 @@
 import board
-import ai
+from ai import Ai
 from flask import Flask
 from random import randint
 
@@ -10,16 +10,17 @@ class Game:
     def __init__(self):
         self.gameID = randint(1000, 9999)
         self.gameBoard = board.Board()
-        self.gameState = self.gameBoard.nextPlayer + "#" + self.gameBoard.boardState + "#" + self.gameBoard.capturedX + "#" + self.gameBoard.capturedO
-        self.gameDict.update(self.gameID, self)
-        self.ai = ai(self.gameBoard)
+        self.gameState = self.update()
+        self.AI = Ai(self.gameBoard)
+        dictADD = {self.gameID: self}
+        gameDict.update(dictADD)
 
     def update(self):
         """
         updates game state
         :return: nothing
         """
-        self.gameState = self.gameBoard.nextPlayer + "#" + self.gameBoard.boardState + "#" + self.gameBoard.capturedX + "#" + self.gameBoard.capturedO
+        self.gameState = str(self.gameBoard.next_player) + "#" + str(self.gameBoard.boardState) + "#" + str(self.gameBoard.capturedX) + "#" + str(self.gameBoard.capturedO)
 
 
 @app.route('/newgame/<player>')
@@ -48,7 +49,7 @@ def nextMove(gameID, row, col):
     activeGame = gameDict[gameID]
     board = activeGame.gameBoard
     board.make_move(board.next_player, row, col)
-    activeGame.ai.move()
+    activeGame.AI.move()
     activeGame.update()
 
     return {
@@ -57,3 +58,5 @@ def nextMove(gameID, row, col):
         'column': col,
         'state': activeGame.gameState,
     }
+
+app.run()
