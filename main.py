@@ -46,7 +46,7 @@ def nextMove(gameID, row, col):
     :param col: what column to add a player stone
     :return: the updated game state
     """
-    activeGame = gameDict[gameID]
+    activeGame = gameDict[int(gameID)]
     board = activeGame.gameBoard
     board.make_move(board.next_player, row, col)
     activeGame.AI.move()
