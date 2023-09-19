@@ -14,7 +14,7 @@ class Ai(object):
         Calls a Board function to make a move as an AI
         """
         while True: # generates a random position until it encounters an empty one
-            x, y = random.random(0, 18), random.random(0, 18)
+            x, y = random.randint(0, 18), random.randint(0, 18)
             if self.board.pos_is_empty(x + (19 * y) - 1):
                 break
         self.board.make_move(self.player, x, y) # calls the board to make a move

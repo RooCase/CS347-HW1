@@ -52,7 +52,9 @@ class Board:
         pos = (19 * row) + col - 1 #-1 to adjust for indexing
         if not self.pos_is_empty(pos):
             return ("Invalid move! Position is already occupied.")
-        self.boardState[pos] = player
+        tempBoardState = [*self.boardState]
+        tempBoardState[pos] = player
+        self.boardState = "".join(tempBoardState)
         self.has_won(self.capturedX, self.capturedO, player, row, col)
         self.check_captured(player, row, col)
         self.update_player(player)
