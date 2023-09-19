@@ -26,12 +26,21 @@ class Game:
 @app.route('/newgame/<player>')
 def newGame(player):
     """
-
     :param player: what the player is (x or o)
     :return: JSON value that notifies the game ID, and the active state of the board
     """
     activeGame = Game()
-    Game.gameState = activeGame.gameState
+    if player == "X" or player == "x":
+        activeGame.gameBoard.next_player = "X"
+        activeGame.AI.player = "O"
+    elif player == "O" or player == "o":
+        activeGame.AI.player = "X"
+        activeGame.gameBoard.next_player = "X"
+        activeGame.AI.move()
+
+    else:
+        raise Exception("Player must be either X or O!")
+    activeGame.update()
     return {
         'id': activeGame.gameID,
         'state': activeGame.gameState
@@ -40,7 +49,6 @@ def newGame(player):
 @app.route('/nextmove/<gameID>/<int:row>/<int:col>')
 def nextMove(gameID, row, col):
     """
-
     :param gameID: the ID for game
     :param row: what row to add a player stone
     :param col: what column to add a player stone
